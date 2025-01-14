@@ -1,6 +1,8 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
+      <StandardButton label="Start" color="primary" @click="startGame" />
+      
       <div>
         <label for="rowSlider">Rows: {{ sliderValue }}</label>
         <input
@@ -12,7 +14,7 @@
         />
         <StandardButton label="Apply" color="primary" @click="applyRowChange" />
       </div>
-      <StandardButton label="Start" color="primary" @click="startGame" />
+      
     </div>
 
     

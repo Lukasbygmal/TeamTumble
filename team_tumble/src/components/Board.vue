@@ -1,6 +1,17 @@
 <template>
     <div class="plinko-board">
       <canvas ref="plinkoCanvas"></canvas>
+      <div v-if="resultsShown" class="results-modal">
+        <div class="modal-content">
+          <h2>Game Results</h2>
+          <ul>
+            <li v-for="ball in capturedBalls" :key="ball.id">
+              Ball {{ ball.id }}: Type {{ ball.type }}
+            </li>
+          </ul>
+          <button @click="closeResults">Close</button>
+        </div>
+      </div>
     </div>
   </template>
   
@@ -9,7 +20,8 @@
   import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
   
   const props = defineProps<{ rows: number }>();
-  
+  const activeBalls = ref(0);
+  const resultsShown = ref(false);
   const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
   let engine: Matter.Engine;
   let render: Matter.Render;
@@ -139,6 +151,9 @@
   const startGame = async (balls: { id: number; name: string }[]) => {
     if (!engine) return;
   
+    resultsShown.value = false;
+    activeBalls.value = 0;
+
     for (const ball of balls) {
       spawnBall();
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -158,18 +173,37 @@
     });
   
     World.add(engine.world, physicsBall);
+    activeBalls.value++;
   };
   
   const resetBall = (ball: Matter.Body) => {
     World.remove(engine.world, ball);
+    activeBalls.value--;
     spawnBall();
-  };
+    };
   
   const captureBall = (ball: Matter.Body, slotLabel: string) => {
     const type = slotLabel.split('-')[1];
     capturedBalls.push({ id: ball.id.toString(), type: type as 'A' | 'B', ball });
     World.remove(engine.world, ball);
+    activeBalls.value--;
+    checkResults();
   };
+
+  const checkResults = () => {
+  if (activeBalls.value === 0 && !resultsShown.value) {
+    resultsShown.value = true;
+    showResultsPopup();
+  }
+    };
+
+const showResultsPopup = () => {
+  resultsShown.value = true;
+};
+
+const closeResults = () => {
+  resultsShown.value = false;
+};
   
   watch(() => props.rows, () => {
     setupPlinko();
@@ -195,5 +229,37 @@
     height: 725px;
     border: 1px solid #ddd;
   }
+  .results-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #0056b3;
+}
   </style>
   
