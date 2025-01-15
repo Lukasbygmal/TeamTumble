@@ -3,56 +3,73 @@
       <canvas ref="plinkoCanvas"></canvas>
       <div v-if="resultsShown" class="results-modal">
         <div class="modal-content">
-          <h2>Game Results</h2>
-          <ul>
-            <li v-for="ball in capturedBalls" :key="ball.id">
-              Ball {{ ball.id }}: Type {{ ball.type }}
-            </li>
-          </ul>
-          <button @click="closeResults">Close</button>
+            <h2>Results</h2>
+            <div class="team-results">
+                <div class="team">
+                    <h3>Team A</h3>
+                    <ul>
+                        <li v-for="ball in capturedBallsA" :key="ball.id">
+                        Ball {{ ball.id }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="team">
+                    <h3>Team B</h3>
+                    <ul>
+                        <li v-for="ball in capturedBallsB" :key="ball.id">
+                        Ball {{ ball.id }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <button @click="closeResults">Close</button>
         </div>
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
-  import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
-  import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
+    import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
+    import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
   
-  const props = defineProps<{ rows: number }>();
-  const activeBalls = ref(0);
-  const resultsShown = ref(false);
-  const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
-  let engine: Matter.Engine;
-  let render: Matter.Render;
-  let runner: Matter.Runner;
+    const props = defineProps<{ rows: number }>();
+    const activeBalls = ref(0);
+    const teamACount = ref(0);
+    const teamBCount = ref(0);
+    const maxPerTeam = ref(0);
+    const resultsShown = ref(false);
+    const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
+    let engine: Matter.Engine;
+    let render: Matter.Render;
+    let runner: Matter.Runner;
   
-  const capturedBalls: { id: string; type: 'A' | 'B'; ball: Matter.Body }[] = [];
+    const capturedBallsA = ref<{ id: string; ball: Matter.Body }[]>([]);
+    const capturedBallsB = ref<{ id: string; ball: Matter.Body }[]>([]);
   
-  const setupPlinko = () => {
-    const canvas = plinkoCanvas.value;
-    if (!canvas) return;
+    const setupPlinko = () => {
+        const canvas = plinkoCanvas.value;
+        if (!canvas) return;
   
-    if (render) Render.stop(render);
-    if (runner) Runner.stop(runner);
-    if (engine) Engine.clear(engine);
+        if (render) Render.stop(render);
+        if (runner) Runner.stop(runner);
+        if (engine) Engine.clear(engine);
   
-    canvas.width = 800;
-    canvas.height = 725;
+        canvas.width = 800;
+        canvas.height = 725;
   
-    engine = Engine.create();
-    engine.world.gravity.y = 1;
+        engine = Engine.create();
+        engine.world.gravity.y = 1;
   
-    render = Render.create({
-      canvas,
-      engine,
-      options: {
-        width: 800,
-        height: 725,
-        wireframes: false,
-        background: '#f0f0f0'
-      }
-    });
+        render = Render.create({
+            canvas,
+            engine,
+            options: {
+            width: 800,
+            height: 725,
+            wireframes: false,
+            background: '#f0f0f0'
+            }
+        });
   
     runner = Runner.create();
   
@@ -148,53 +165,73 @@
     Render.run(render);
   };
   
-  const startGame = async (balls: { id: number; name: string }[]) => {
-    if (!engine) return;
+    const startGame = async (balls: { id: number; name: string }[]) => {
+        if (!engine) return;
   
-    resultsShown.value = false;
-    activeBalls.value = 0;
+        resultsShown.value = false;
+        activeBalls.value = 0;
+        capturedBallsA.value = [];
+        capturedBallsB.value = [];
+        teamACount.value = 0;
+        teamBCount.value = 0;
 
-    for (const ball of balls) {
-      spawnBall();
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
+        maxPerTeam.value = Math.ceil(balls.length / 2);
+
+        for (const ball of balls) {
+            spawnBall();
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
   };
   
-  const spawnBall = () => {
-    const centerX = 400;
-    const slightOffset = (Math.random() - 0.2) * 20;
-    const randomX = centerX + slightOffset;
+    const spawnBall = () => {
+        const centerX = 400;
+        const slightOffset = (Math.random() - 0.2) * 20;
+        const randomX = centerX + slightOffset;
   
     const physicsBall = Bodies.circle(randomX, 50, 10, {
-      restitution: 0.3,
-      friction: 0.005,
-      label: 'ball',
-      render: { fillStyle: 'red' }
+        restitution: 0.3,
+        friction: 0.005,
+        label: 'ball',
+        render: { fillStyle: 'red' }
     });
   
     World.add(engine.world, physicsBall);
     activeBalls.value++;
   };
   
-  const resetBall = (ball: Matter.Body) => {
-    World.remove(engine.world, ball);
-    activeBalls.value--;
-    spawnBall();
+    const resetBall = (ball: Matter.Body) => {
+        World.remove(engine.world, ball);
+        activeBalls.value--;
+        spawnBall();
     };
   
-  const captureBall = (ball: Matter.Body, slotLabel: string) => {
-    const type = slotLabel.split('-')[1];
-    capturedBalls.push({ id: ball.id.toString(), type: type as 'A' | 'B', ball });
-    World.remove(engine.world, ball);
-    activeBalls.value--;
-    checkResults();
-  };
+    const captureBall = (ball: Matter.Body, slotLabel: string) => {
+        const type = slotLabel.split('-')[1];
 
-  const checkResults = () => {
-  if (activeBalls.value === 0 && !resultsShown.value) {
-    resultsShown.value = true;
+        if (type === 'A' && teamACount.value < maxPerTeam.value) {
+            teamACount.value++;
+            capturedBallsA.value.push({ id: ball.id.toString(), ball });
+        } 
+        else if (type === 'B' && teamBCount.value < maxPerTeam.value) {
+            teamBCount.value++;
+            capturedBallsB.value.push({ id: ball.id.toString(), ball });
+        } 
+        else {
+            resetBall(ball);
+            return;
+        }
+
+
+        World.remove(engine.world, ball);
+        activeBalls.value--;
+        checkResults();
+    };
+
+    const checkResults = () => {
+    if (activeBalls.value === 0 && !resultsShown.value) {
+        resultsShown.value = true;
     showResultsPopup();
-  }
+    }
     };
 
 const showResultsPopup = () => {
@@ -212,7 +249,6 @@ const closeResults = () => {
   defineExpose({
     setupPlinko,
     startGame,
-    capturedBalls
   });
   
   onMounted(setupPlinko);
