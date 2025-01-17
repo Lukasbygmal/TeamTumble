@@ -2,36 +2,23 @@
   <div class="plinko-container">
     <div class="sidebar">
       <StandardButton label="Start" color="primary" @click="startGame" />
-      
+
       <div>
         <label for="rowSlider">Rows: {{ sliderValue }}</label>
-        <input
-          id="rowSlider"
-          type="range"
-          min="12"
-          max="22"
-          v-model="sliderValue"
-        />
+        <input id="rowSlider" type="range" min="12" max="22" v-model="sliderValue" />
         <StandardButton label="Apply" color="primary" @click="applyRowChange" />
       </div>
-      
+
     </div>
 
-    
-    <Board ref="plinkoBoard" :rows="rows" />
+
+    <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" />
 
     <div class="sidebar">
       <StandardButton label="Add Ball" color="secondary" @click="addBall" />
       <div class="ball-list">
-        <div
-          v-for="(ball, index) in balls"
-          :key="ball.id"
-          class="ball-item"
-        >
-          <input
-            v-model="ball.name"
-            :placeholder="`Ball ${index + 1}`"
-          />
+        <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
+          <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
           <StandardButton label="-" color="danger" @click="removeBall(index)" />
         </div>
       </div>
@@ -46,6 +33,7 @@ import Board from '@/components/Board.vue';
 
 const sliderValue = ref(18);
 const rows = ref(18);
+const teams = ref(2);
 const balls = ref<{ id: number; name: string }[]>([]);
 let ballId = 1;
 
