@@ -90,8 +90,8 @@ const setupPlinko = () => {
       );
     }
   }
-  var num_slots = 0;
-  var num_slots_side = 0;
+  var num_slots = null;
+  var num_slots_side = null;
   var num_empty_slots = 2;
   const slots = [];
   if (props.teams > 4) {
@@ -108,7 +108,6 @@ const setupPlinko = () => {
 
   var slot_index = 0
   for (let i = 0; i < num_slots; i++) {
-
     if (i < num_slots_side) {
       slots.push(
         Bodies.rectangle(

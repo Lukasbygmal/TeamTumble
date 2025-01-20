@@ -4,10 +4,14 @@
       <StandardButton label="Start" color="primary" @click="startGame" />
 
       <div>
-        <label for="rowSlider">Rows: {{ sliderValue }}</label>
-        <input id="rowSlider" type="range" min="12" max="22" v-model="sliderValue" />
-        <StandardButton label="Apply" color="primary" @click="applyRowChange" />
+        <label for="rowSlider">Rows: {{ rowSliderValue }}</label>
+        <input id="rowSlider" type="range" min="12" max="22" v-model="rowSliderValue" />
       </div>
+      <div>
+        <label for="teamSlider">Teams: {{ teamSliderValue }}</label>
+        <input id="teamSlider" type="range" min="2" max="8" v-model="teamSliderValue" />
+      </div>
+      <StandardButton label="Apply" color="primary" @click="applyChange" />
 
     </div>
 
@@ -31,16 +35,18 @@ import { ref } from 'vue';
 import StandardButton from '@/components/StandardButton.vue';
 import Board from '@/components/Board.vue';
 
-const sliderValue = ref(18);
-const rows = ref(18);
+const rowSliderValue = ref(16);
+const teamSliderValue = ref(2);
+const rows = ref(16);
 const teams = ref(2);
 const balls = ref<{ id: number; name: string }[]>([]);
 let ballId = 1;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
 
-const applyRowChange = () => {
-  rows.value = sliderValue.value;
+const applyChange = () => {
+  rows.value = Number(rowSliderValue.value);
+  teams.value = Number(teamSliderValue.value);
   plinkoBoard.value?.setupPlinko();
 };
 
@@ -51,7 +57,7 @@ const startGame = () => {
 const addBall = () => {
   balls.value.push({
     id: ballId++,
-    name: `Ball ${balls.value.length + 1}`
+    name: `${balls.value.length + 1}`
   });
 };
 
