@@ -5,11 +5,11 @@
       <div class="modal-content">
         <h2>Results</h2>
         <div class="team-results">
-          <div class="team" v-for="(balls, teamId) in capturedBalls" :key="teamId">
-            <h3>Team {{ teamId }}</h3>
+          <div class="team" v-for="(balls, teamId) in capturedBalls" :key="teamId" v-if="balls.length > 0">
+            <h3>Team {{ teamId + 1 }}</h3>
             <ul>
               <li v-for="ball in balls" :key="ball.name">
-                Ball {{ ball.name }}
+                {{ ball.name }}
               </li>
             </ul>
           </div>
@@ -27,7 +27,7 @@ import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js
 const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string }[] }>();
 const activeBalls = ref(0);
 const teamCounts = ref(new Map<number, number>());
-const capturedBalls = ref(new Map<number, { id: string; ball: Matter.Body }[]>());
+const capturedBalls = ref(Array.from({ length: 8 }, () => []));
 const maxPerTeam = ref(0);
 const resultsShown = ref(false);
 const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
@@ -192,9 +192,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   resultsShown.value = false;
   activeBalls.value = 0;
 
-  capturedBalls.value = new Map(
-    Array.from({ length: props.teams }, (_, teamId) => [teamId, []])
-  );
+  capturedBalls.value.forEach((team) => team.length = 0);
   teamCounts.value = new Map<number, number>();
 
   maxPerTeam.value = Math.ceil(balls.length / props.teams);
@@ -232,21 +230,16 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
 
 
   const teamCount = teamCounts.value.get(teamId) ?? 0;
-  
   const ballData = props.balls.find((b) => b.id.toString() === ball.id.toString());
 
   if (teamCount < maxPerTeam.value) {
     teamCounts.value.set(teamId, teamCount + 1);
 
-    if (!capturedBalls.value.has(teamId)) {
-      capturedBalls.value.set(teamId, []);
-    }
-
-    capturedBalls.value.get(teamId)!.push({
-      name: ballData?.name || `Ball ${ball.id}`,
+    capturedBalls.value[teamId].push({
+      name: ballData?.name || `${ball.id}`,
       ball,
     });
-  } 
+  }
   else {
     resetBall(ball);
     return;

@@ -57,7 +57,7 @@ const startGame = () => {
 const addBall = () => {
   balls.value.push({
     id: ballId++,
-    name: `${balls.value.length + 1}`
+    name: "" + ballId,
   });
 };
 
