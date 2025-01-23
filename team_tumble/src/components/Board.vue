@@ -37,7 +37,9 @@ let runner: Matter.Runner;
 
 const colors = ['#ffaaaa', '#aaffaa', '#aaaaff', '#ffffaa', '#ffaaff', '#aaffff', '#ffaa00', '#aa00ff'];
 
-
+const emit = defineEmits<{
+  (event: 'game-ended'): void;
+}>();
 
 
 const setupPlinko = () => {
@@ -195,6 +197,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   capturedBalls.value.forEach((team) => team.length = 0);
   teamCounts.value = new Map<number, number>();
 
+  //This is buggy, when balls > teams and teams > 2 and not evenly divided 
   maxPerTeam.value = Math.ceil(balls.length / props.teams);
 
   for (const ball of balls) {
@@ -254,6 +257,7 @@ const checkResults = () => {
   if (activeBalls.value === 0 && !resultsShown.value) {
     resultsShown.value = true;
     showResultsPopup();
+    emit('game-ended');
   }
 };
 

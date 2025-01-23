@@ -1,29 +1,29 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-      <StandardButton label="Start" color="primary" @click="startGame" />
+      <StandardButton label="Start" color="primary" @click="startGame" :disabled="isGameActive" />
 
       <div>
         <label for="rowSlider">Rows: {{ rowSliderValue }}</label>
-        <input id="rowSlider" type="range" min="12" max="22" v-model="rowSliderValue" />
+        <input id="rowSlider" type="range" min="12" max="22" v-model="rowSliderValue" :disabled="isGameActive" />
       </div>
       <div>
         <label for="teamSlider">Teams: {{ teamSliderValue }}</label>
-        <input id="teamSlider" type="range" min="2" max="8" v-model="teamSliderValue" />
+        <input id="teamSlider" type="range" min="2" max="8" v-model="teamSliderValue" :disabled="isGameActive" />
       </div>
-      <StandardButton label="Apply" color="primary" @click="applyChange" />
+      <StandardButton label="Apply" color="primary" @click="applyChange" :disabled="isGameActive" />
 
     </div>
 
 
-    <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" />
+    <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" @game-ended="handleGameEnd" />
 
     <div class="sidebar">
-      <StandardButton label="Add Ball" color="secondary" @click="addBall" />
+      <StandardButton label="Add Ball" color="secondary" @click="addBall" :disabled="isGameActive" />
       <div class="ball-list">
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
           <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
-          <StandardButton label="-" color="danger" @click="removeBall(index)" />
+          <StandardButton label="-" color="danger" @click="removeBall(index)" :disabled="isGameActive" />
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@ import { ref } from 'vue';
 import StandardButton from '@/components/StandardButton.vue';
 import Board from '@/components/Board.vue';
 
+const isGameActive = ref(false);
 const rowSliderValue = ref(16);
 const teamSliderValue = ref(2);
 const rows = ref(16);
@@ -52,6 +53,11 @@ const applyChange = () => {
 
 const startGame = () => {
   plinkoBoard.value?.startGame(balls.value);
+  isGameActive.value = true;
+};
+
+const handleGameEnd = () => {
+  isGameActive.value = false;
 };
 
 const addBall = () => {
