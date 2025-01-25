@@ -25,6 +25,7 @@ import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
 import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
 
 const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string }[] }>();
+const ballQueue = ref([...props.balls]);
 const activeBalls = ref(0);
 const teamCounts = ref(new Map<number, number>());
 const capturedBalls = ref(Array.from({ length: 8 }, () => []));
@@ -193,6 +194,8 @@ const startGame = async (balls: { id: number; name: string }[]) => {
 
   resultsShown.value = false;
   activeBalls.value = 0;
+  
+  ballQueue.value = [...props.balls];
 
   capturedBalls.value.forEach((team) => team.length = 0);
   teamCounts.value = new Map<number, number>();
@@ -210,6 +213,8 @@ const spawnBall = () => {
   const centerX = 400;
   const slightOffset = (Math.random() - 0.2) * 20;
   const randomX = centerX + slightOffset;
+  const ballData = ballQueue.value.shift();
+  if (!ballData) return;
 
   const physicsBall = Bodies.circle(randomX, 50, 10, {
     restitution: 0.3,
@@ -218,14 +223,24 @@ const spawnBall = () => {
     render: { fillStyle: 'red' }
   });
 
+  physicsBall.id = ballData.id;
   World.add(engine.world, physicsBall);
   activeBalls.value++;
 };
 
 const resetBall = (ball: Matter.Body) => {
+  const ballId = ball.id;
   World.remove(engine.world, ball);
   activeBalls.value--;
-  spawnBall();
+
+  const originalBallData = props.balls.find((b) => b.id === ballId);
+  if (originalBallData) {
+    ballQueue.value.push(originalBallData);
+  }
+
+  if (activeBalls.value < props.balls.length) {
+    spawnBall()
+  }
 };
 
 const captureBall = (ball: Matter.Body, slotLabel: string) => {
@@ -233,7 +248,7 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
 
 
   const teamCount = teamCounts.value.get(teamId) ?? 0;
-  const ballData = props.balls.find((b) => b.id.toString() === ball.id.toString());
+  const ballData = props.balls.find((b) => b.id === ball.id);
 
   if (teamCount < maxPerTeam.value) {
     teamCounts.value.set(teamId, teamCount + 1);

@@ -41,7 +41,7 @@ const teamSliderValue = ref(2);
 const rows = ref(16);
 const teams = ref(2);
 const balls = ref<{ id: number; name: string }[]>([]);
-let ballId = 1;
+let ballId = 0;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
 
