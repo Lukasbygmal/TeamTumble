@@ -193,7 +193,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   if (!engine) return;
 
   resultsShown.value = false;
-  activeBalls.value = 0;
+  activeBalls.value = props.balls.length;
   
   ballQueue.value = [...props.balls];
 
@@ -225,22 +225,18 @@ const spawnBall = () => {
 
   physicsBall.id = ballData.id;
   World.add(engine.world, physicsBall);
-  activeBalls.value++;
 };
 
 const resetBall = (ball: Matter.Body) => {
   const ballId = ball.id;
   World.remove(engine.world, ball);
-  activeBalls.value--;
 
   const originalBallData = props.balls.find((b) => b.id === ballId);
   if (originalBallData) {
     ballQueue.value.push(originalBallData);
   }
 
-  if (activeBalls.value < props.balls.length) {
-    spawnBall()
-  }
+  spawnBall()
 };
 
 const captureBall = (ball: Matter.Body, slotLabel: string) => {
@@ -269,7 +265,7 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
 };
 
 const checkResults = () => {
-  if (activeBalls.value === 0 && !resultsShown.value) {
+  if (activeBalls.value === 0 && ballQueue.value.length === 0 && !resultsShown.value) {
     resultsShown.value = true;
     showResultsPopup();
     emit('game-ended');
