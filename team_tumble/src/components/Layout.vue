@@ -1,7 +1,8 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-      <StandardButton label="Start" color="primary" @click="startGame" :disabled="isGameActive" />
+      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary'"
+        @click="isGameActive ? cancelGame() : startGame()" />
 
       <div>
         <label for="rowSlider">Rows: {{ rowSliderValue }}</label>
@@ -22,7 +23,7 @@
       <StandardButton label="Add Ball" color="secondary" @click="addBall" :disabled="isGameActive" />
       <div class="ball-list">
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
-          <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div> 
+          <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div>
           <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
           <StandardButton label="-" color="danger" @click="removeBall(index)" :disabled="isGameActive" />
         </div>
@@ -41,7 +42,7 @@ const rowSliderValue = ref(16);
 const teamSliderValue = ref(2);
 const rows = ref(16);
 const teams = ref(2);
-const balls = ref<{ id: number; name: string, color:string }[]>([]);
+const balls = ref<{ id: number; name: string, color: string }[]>([]);
 let ballId = 0;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
@@ -55,6 +56,11 @@ const applyChange = () => {
 const startGame = () => {
   plinkoBoard.value?.startGame(balls.value);
   isGameActive.value = true;
+};
+
+const cancelGame = () => {
+  plinkoBoard.value?.cancelGame();
+  isGameActive.value = false;
 };
 
 const handleGameEnd = () => {

@@ -274,6 +274,20 @@ const checkResults = () => {
   }
 };
 
+const cancelGame = () => {
+  if (render) Render.stop(render);
+  if (runner) Runner.stop(runner);
+  if (engine) Engine.clear(engine);
+
+  ballQueue.value = [];
+  activeBalls.value = 0;
+  capturedBalls.value.forEach((team) => team.length = 0);
+  teamCounts.value.clear();
+  resultsShown.value = false;
+
+  setupPlinko();
+};
+
 const showResultsPopup = () => {
   resultsShown.value = true;
 };
@@ -289,6 +303,7 @@ watch([() => props.rows, () => props.teams], () => {
 defineExpose({
   setupPlinko,
   startGame,
+  cancelGame,
 });
 
 onMounted(setupPlinko);
