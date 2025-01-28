@@ -22,6 +22,7 @@
       <StandardButton label="Add Ball" color="secondary" @click="addBall" :disabled="isGameActive" />
       <div class="ball-list">
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
+          <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div> 
           <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
           <StandardButton label="-" color="danger" @click="removeBall(index)" :disabled="isGameActive" />
         </div>
@@ -40,7 +41,7 @@ const rowSliderValue = ref(16);
 const teamSliderValue = ref(2);
 const rows = ref(16);
 const teams = ref(2);
-const balls = ref<{ id: number; name: string }[]>([]);
+const balls = ref<{ id: number; name: string, color:string }[]>([]);
 let ballId = 0;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
@@ -64,6 +65,7 @@ const addBall = () => {
   balls.value.push({
     id: ballId++,
     name: "" + ballId,
+    color: `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`,
   });
 };
 
@@ -111,5 +113,12 @@ const removeBall = (index: number) => {
   flex-grow: 1;
   margin-right: 5px;
   padding: 2px;
+}
+
+.color-indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 </style>

@@ -24,7 +24,7 @@
 import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
 import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
 
-const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string }[] }>();
+const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string; color: string }[] }>();
 const ballQueue = ref([...props.balls]);
 const activeBalls = ref(0);
 const teamCounts = ref(new Map<number, number>());
@@ -209,6 +209,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   }
 };
 
+//can duplicate ball, have to look into it
 const spawnBall = () => {
   const centerX = 400;
   const slightOffset = (Math.random() - 0.2) * 20;
@@ -220,7 +221,7 @@ const spawnBall = () => {
     restitution: 0.3,
     friction: 0.005,
     label: 'ball',
-    render: { fillStyle: 'red' }
+    render: { fillStyle: ballData.color }
   });
 
   physicsBall.id = ballData.id;
@@ -251,6 +252,7 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
 
     capturedBalls.value[teamId].push({
       name: ballData?.name || `${ball.id}`,
+      color: ballData?.color || ball.render.fillStyle,
       ball,
     });
   }
