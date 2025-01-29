@@ -1,6 +1,7 @@
 <template>
     <button
       :class="['standard-button', color]"
+      :style="{ fontSize: fontSize }"
       @click="handleClick"
     >
       {{ label }}
@@ -12,6 +13,7 @@
   defineProps<{
     label: string;
     color?: 'primary' | 'secondary' | 'danger';
+    fontSize?: string;
   }>();
   
 
@@ -23,12 +25,11 @@
   
   <style scoped>
   .standard-button {
-    padding: 10px 20px;
-    font-size: 16px;
+    font-family: 'Lilita One', cursive;
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    margin-bottom: 10px;
+    padding: 3px 8px;
   }
   
 

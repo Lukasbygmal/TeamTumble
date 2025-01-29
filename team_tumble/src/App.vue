@@ -19,11 +19,12 @@ export default {
 <style>
 #app {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: Pacifico, Lilita-One;
   margin: 0;
   padding: 0;
 }
 h1 {
-  margin: 20px 0;
+  margin: 0;
+  font-size: 48px;
 }
 </style>

@@ -1,8 +1,7 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary'"
-        @click="isGameActive ? cancelGame() : startGame()" />
+      
 
       <div>
         <label for="rowSlider">Rows: {{ rowSliderValue }}</label>
@@ -12,7 +11,7 @@
         <label for="teamSlider">Teams: {{ teamSliderValue }}</label>
         <input id="teamSlider" type="range" min="2" max="8" v-model="teamSliderValue" :disabled="isGameActive" />
       </div>
-      <StandardButton label="Apply" color="primary" @click="applyChange" :disabled="isGameActive" />
+      <StandardButton label="Apply" fontSize="24px" color="primary" @click="applyChange" :disabled="isGameActive" />
 
     </div>
 
@@ -20,14 +19,16 @@
     <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" @game-ended="handleGameEnd" />
 
     <div class="sidebar">
-      <StandardButton label="Add Ball" color="secondary" @click="addBall" :disabled="isGameActive" />
+      <StandardButton label="Add Ball" color="secondary" fontSize="24px" @click="addBall" :disabled="isGameActive" />
       <div class="ball-list">
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
           <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div>
           <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
-          <StandardButton label="-" color="danger" @click="removeBall(index)" :disabled="isGameActive" />
+          <StandardButton label="-" color="danger" fontSize="16px" @click="removeBall(index)" :disabled="isGameActive" />
         </div>
       </div>
+      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary' " fontSize="48px" 
+        @click="isGameActive ? cancelGame() : startGame()" />
     </div>
   </div>
 </template>
@@ -101,7 +102,7 @@ const removeBall = (index: number) => {
 }
 
 .ball-list {
-  height: 600px;
+  height: 580px;
   overflow-y: auto;
   border: 1px solid #ccc;
   width: 250px;
