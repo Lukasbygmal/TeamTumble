@@ -194,7 +194,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
 
   resultsShown.value = false;
   activeBalls.value = props.balls.length;
-  
+
   ballQueue.value = [...props.balls];
 
   capturedBalls.value.forEach((team) => team.length = 0);

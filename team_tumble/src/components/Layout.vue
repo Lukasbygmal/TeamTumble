@@ -1,16 +1,11 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-      
 
-      <div>
-        <label for="rowSlider">Rows: {{ rowSliderValue }}</label>
-        <input id="rowSlider" type="range" min="12" max="22" v-model="rowSliderValue" :disabled="isGameActive" />
-      </div>
-      <div>
-        <label for="teamSlider">Teams: {{ teamSliderValue }}</label>
-        <input id="teamSlider" type="range" min="2" max="8" v-model="teamSliderValue" :disabled="isGameActive" />
-      </div>
+
+      <CustomSlider id="rowSlider" label="Rows" :min="12" :max="22" :disabled="isGameActive" v-model="rowSliderValue" />
+      <CustomSlider id="teamSlider" label="Teams" :min="2" :max="8" :disabled="isGameActive"
+        v-model="teamSliderValue" />
       <StandardButton label="Apply" fontSize="24px" color="primary" @click="applyChange" :disabled="isGameActive" />
 
     </div>
@@ -24,11 +19,12 @@
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
           <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div>
           <input v-model="ball.name" :placeholder="`Ball ${index + 1}`" />
-          <StandardButton label="-" color="danger" fontSize="16px" @click="removeBall(index)" :disabled="isGameActive" />
+          <StandardButton label="-" color="danger" fontSize="16px" @click="removeBall(index)"
+            :disabled="isGameActive" />
         </div>
       </div>
-      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary' " fontSize="48px" 
-        @click="isGameActive ? cancelGame() : startGame()" />
+      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary'"
+        fontSize="48px" @click="isGameActive ? cancelGame() : startGame()" />
     </div>
   </div>
 </template>
@@ -37,6 +33,7 @@
 import { ref } from 'vue';
 import StandardButton from '@/components/StandardButton.vue';
 import Board from '@/components/Board.vue';
+import CustomSlider from './CustomSlider.vue';
 
 const isGameActive = ref(false);
 const rowSliderValue = ref(16);
