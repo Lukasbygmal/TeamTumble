@@ -65,7 +65,7 @@ const setupPlinko = () => {
       width: 800,
       height: 725,
       wireframes: false,
-      background: '#f0f0f0'
+      background: '#d3d3d3'
     }
   });
 
@@ -144,12 +144,12 @@ const setupPlinko = () => {
       );
       slot_index = slot_index + 1;
     }
-    else {
+    if (i == num_slots_side) {
       slots.push(
         Bodies.rectangle(
-          10 + (slotWidth / 2) + i * slotWidth,
+          10 + (slotWidth) + i * slotWidth,
           710,
-          slotWidth,
+          slotWidth * 2,
           10,
           {
             isStatic: true,
@@ -217,7 +217,7 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   capturedBalls.value.forEach((team) => team.length = 0);
   teamCounts.value = new Map<number, number>();
 
-  //This is buggy, when balls > teams and teams > 2 and not evenly divided 
+  //When balls > teams and teams > 2 and not evenly divided, it will cause "issues", but sorta how it will have to work 
   maxPerTeam.value = Math.ceil(balls.length / props.teams);
 
   for (const ball of balls) {
@@ -226,10 +226,9 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   }
 };
 
-//can duplicate ball, have to look into it
 const spawnBall = () => {
   const centerX = 400;
-  const slightOffset = (Math.random() - 0.2) * 20;
+  const slightOffset = (Math.random() - 0.5) * 20;
   const randomX = centerX + slightOffset;
   const ballData = ballQueue.value.shift();
   if (!ballData) return;

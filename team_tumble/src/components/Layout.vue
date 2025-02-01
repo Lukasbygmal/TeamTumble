@@ -1,7 +1,7 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-  
+
     </div>
     <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" @game-ended="handleGameEnd" />
     <div class="sidebar">
@@ -35,6 +35,7 @@ const teamSliderValue = ref(2);
 const rows = ref(16);
 const teams = ref(2);
 const balls = ref<{ id: number; name: string, color: string }[]>([]);
+const maxBalls = 40;
 let ballId = 0;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
@@ -50,8 +51,11 @@ watch(teamSliderValue, (newValue) => {
 });
 
 const startGame = () => {
-  plinkoBoard.value?.startGame(balls.value);
-  isGameActive.value = true;
+  if (balls.value.length > 0) {
+    plinkoBoard.value?.startGame(balls.value);
+    isGameActive.value = true;
+  }
+
 };
 
 const cancelGame = () => {
@@ -64,11 +68,14 @@ const handleGameEnd = () => {
 };
 
 const addBall = () => {
-  balls.value.push({
-    id: ballId++,
-    name: "" + ballId,
-    color: `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`,
-  });
+  if (balls.value.length < maxBalls) {
+    balls.value.push({
+      id: ballId++,
+      name: "" + ballId,
+      color: `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`,
+    });
+  }
+
 };
 
 const removeBall = (index: number) => {
@@ -111,6 +118,7 @@ const removeBall = (index: number) => {
   flex-grow: 1;
   margin-right: 5px;
   padding: 2px;
+  background-color: #d3d3d3;
 }
 
 .color-indicator {
