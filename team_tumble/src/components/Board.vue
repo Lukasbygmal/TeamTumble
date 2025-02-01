@@ -71,9 +71,9 @@ const setupPlinko = () => {
 
   runner = Runner.create();
 
-  const ground = Bodies.rectangle(400, 720, 800, 10, { isStatic: true, label: 'ground' });
-  const leftWall = Bodies.rectangle(5, 362.5, 10, 725, { isStatic: true });
-  const rightWall = Bodies.rectangle(795, 362.5, 10, 725, { isStatic: true });
+  const ground = Bodies.rectangle(400, 720, 800, 10, { isStatic: true, render: { fillStyle: '#373434' } });
+  const leftWall = Bodies.rectangle(5, 362.5, 10, 725, { isStatic: true, render: { fillStyle: '#373434' } });
+  const rightWall = Bodies.rectangle(795, 362.5, 10, 725, { isStatic: true, render: { fillStyle: '#373434' } });
 
   const pegs: Matter.Body[] = [];
   const rowHeights = 575;
@@ -128,7 +128,7 @@ const setupPlinko = () => {
       );
       slot_index = slot_index + 1;
     }
-    if (i > num_slots_side + 1) {
+    else if (i > num_slots_side + 1) {
       slots.push(
         Bodies.rectangle(
           10 + (slotWidth / 2) + i * slotWidth,
@@ -139,6 +139,22 @@ const setupPlinko = () => {
             isStatic: true,
             label: `slot-${slot_index % props.teams}`,
             render: { fillStyle: colors[slot_index % props.teams] }
+          }
+        )
+      );
+      slot_index = slot_index + 1;
+    }
+    else {
+      slots.push(
+        Bodies.rectangle(
+          10 + (slotWidth / 2) + i * slotWidth,
+          710,
+          slotWidth,
+          10,
+          {
+            isStatic: true,
+            label: 'ground',
+            render: { fillStyle: '#000' } //this should invisible
           }
         )
       );
@@ -156,7 +172,7 @@ const setupPlinko = () => {
             label: 'divider',
             friction: 0.0,
             frictionStatic: 0.0,
-            render: { fillStyle: '#000' }
+            render: { fillStyle: '#373434' }
           }
         )
       );
@@ -231,6 +247,10 @@ const spawnBall = () => {
 
 const resetBall = (ball: Matter.Body) => {
   const ballId = ball.id;
+
+  const isCaptured = capturedBalls.value.some(team => team.some(b => b.ball.id === ball.id));
+  if (isCaptured) return;
+
   World.remove(engine.world, ball);
 
   const originalBallData = props.balls.find((b) => b.id === ballId);
@@ -244,6 +264,7 @@ const resetBall = (ball: Matter.Body) => {
 const captureBall = (ball: Matter.Body, slotLabel: string) => {
   const teamId = parseInt(slotLabel.split('-')[1], 10);
 
+  if (capturedBalls.value[teamId].some(b => b.ball.id === ball.id)) return;
 
   const teamCount = teamCounts.value.get(teamId) ?? 0;
   const ballData = props.balls.find((b) => b.id === ball.id);
@@ -319,7 +340,6 @@ onBeforeUnmount(() => {
 .plinko-board {
   width: 800px;
   height: 725px;
-  border: 1px solid #ddd;
 }
 
 .results-modal {

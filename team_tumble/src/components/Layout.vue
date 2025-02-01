@@ -1,20 +1,12 @@
 <template>
   <div class="plinko-container">
     <div class="sidebar">
-
-
-      <CustomSlider id="rowSlider" label="Rows" :min="12" :max="22" :disabled="isGameActive" v-model="rowSliderValue" />
-      <CustomSlider id="teamSlider" label="Teams" :min="2" :max="8" :disabled="isGameActive"
-        v-model="teamSliderValue" />
-      <StandardButton label="Apply" fontSize="24px" color="primary" @click="applyChange" :disabled="isGameActive" />
-
+  
     </div>
-
-
     <Board ref="plinkoBoard" :rows="rows" :teams="teams" :balls="balls" @game-ended="handleGameEnd" />
-
     <div class="sidebar">
-      <StandardButton label="Add Ball" color="secondary" fontSize="24px" @click="addBall" :disabled="isGameActive" />
+      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary'"
+        fontSize="48px" @click="isGameActive ? cancelGame() : startGame()" />
       <div class="ball-list">
         <div v-for="(ball, index) in balls" :key="ball.id" class="ball-item">
           <div class="color-indicator" :style="{ backgroundColor: ball.color }"></div>
@@ -23,14 +15,16 @@
             :disabled="isGameActive" />
         </div>
       </div>
-      <StandardButton :label="isGameActive ? 'Cancel' : 'Start'" :color="isGameActive ? 'danger' : 'primary'"
-        fontSize="48px" @click="isGameActive ? cancelGame() : startGame()" />
+      <StandardButton label="Add Ball" color="secondary" fontSize="24px" @click="addBall" :disabled="isGameActive" />
+      <CustomSlider id="rowSlider" label="Rows" :min="12" :max="22" :disabled="isGameActive" v-model="rowSliderValue" />
+      <CustomSlider id="teamSlider" label="Teams" :min="2" :max="8" :disabled="isGameActive"
+        v-model="teamSliderValue" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import StandardButton from '@/components/StandardButton.vue';
 import Board from '@/components/Board.vue';
 import CustomSlider from './CustomSlider.vue';
@@ -45,11 +39,15 @@ let ballId = 0;
 
 const plinkoBoard = ref<InstanceType<typeof Board> | null>(null);
 
-const applyChange = () => {
-  rows.value = Number(rowSliderValue.value);
-  teams.value = Number(teamSliderValue.value);
+watch(rowSliderValue, (newValue) => {
+  rows.value = Number(newValue);
   plinkoBoard.value?.setupPlinko();
-};
+});
+
+watch(teamSliderValue, (newValue) => {
+  teams.value = Number(newValue);
+  plinkoBoard.value?.setupPlinko();
+});
 
 const startGame = () => {
   plinkoBoard.value?.startGame(balls.value);
@@ -84,7 +82,6 @@ const removeBall = (index: number) => {
   justify-content: center;
   align-items: flex-start;
   gap: 20px;
-  margin: 20px auto;
 }
 
 .sidebar {
@@ -95,14 +92,10 @@ const removeBall = (index: number) => {
   gap: 10px;
 }
 
-.sidebar input[type="range"] {
-  margin-bottom: 10px;
-}
 
 .ball-list {
-  height: 580px;
+  height: 400px;
   overflow-y: auto;
-  border: 1px solid #ccc;
   width: 250px;
   padding: 5px;
 }
@@ -124,6 +117,6 @@ const removeBall = (index: number) => {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  margin: 2px;
 }
 </style>

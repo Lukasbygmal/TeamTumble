@@ -22,14 +22,12 @@ export default {
   font-family: Lilita-One, Pacifico;
   margin: 0;
   padding: 0;
-  background-color:	#373434;
+  background-color: #373434;
 }
 
 h1 {
   margin: 0;
-  font-size: 48px;
-  color: #0AC6C6; 
+  font-size: 54px;
+  color: #0AC6C6;
 }
-
 </style>
-

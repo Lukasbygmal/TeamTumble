@@ -21,17 +21,16 @@ defineEmits(['update:modelValue']);
 
 <style scoped>
 .slider-container {
-    margin: 20px 0;
     width: 100%;
     max-width: 300px;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
 .slider-label {
     font-family: 'Lilita One', cursive;
     display: block;
-    margin-bottom: 10px;
-    color: #0AC6C6; 
+    margin-bottom: 5px;
+    color: #0AC6C6;
     font-size: 1.2em;
 }
 
