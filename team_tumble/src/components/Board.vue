@@ -5,7 +5,7 @@
       <div class="modal-content">
         <h2>Results</h2>
         <div class="team-results">
-          <div class="team" v-for="(balls, teamId) in capturedBalls" :key="teamId" v-if="balls.length > 0">
+          <div v-for="(balls, teamId) in capturedBalls" v-show="teamId < teams" :key="teamId" class="team">
             <h3>Team {{ teamId + 1 }}</h3>
             <ul>
               <li v-for="ball in balls" :key="ball.name">
@@ -14,7 +14,7 @@
             </ul>
           </div>
         </div>
-        <button @click="closeResults">Close</button>
+        <StandardButton label="Close" fontSize="24px" color="primary" @click="closeResults" />
       </div>
     </div>
   </div>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
 import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
+import StandardButton from '@/components/StandardButton.vue';
 
 const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string; color: string }[] }>();
 const ballQueue = ref([...props.balls]);
@@ -340,6 +341,36 @@ onBeforeUnmount(() => {
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Lilita One', cursive;
+  font-size: 18px;
+  padding: 20px;
+}
+
+.team-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.team {
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.team h3 {
+  margin-bottom: 10px;
+}
+
+.team ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.team li {
+  margin-bottom: 5px;
 }
 
 button {

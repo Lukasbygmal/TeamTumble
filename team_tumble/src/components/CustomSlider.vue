@@ -31,14 +31,14 @@ defineEmits(['update:modelValue']);
     font-family: 'Lilita One', cursive;
     display: block;
     margin-bottom: 10px;
-    color: #333;
+    color: #0AC6C6; 
     font-size: 1.2em;
 }
 
 .slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 8px;
+    height: 12px;
     border-radius: 5px;
     background: #d3d3d3;
     outline: none;
@@ -59,7 +59,7 @@ defineEmits(['update:modelValue']);
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #4caf50;
+    background: #0AC6C6;
     cursor: pointer;
     transition: background .2s ease-in-out;
     border: none;

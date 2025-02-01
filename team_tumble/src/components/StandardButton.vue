@@ -35,17 +35,17 @@
 
   .primary {
     background-color: #4caf50;
-    color: white;
+    color: #373434
   }
   
   .secondary {
-    background-color: #008cba;
-    color: white;
+    background-color: #0AC6C6;
+    color: #373434;
   }
   
   .danger {
     background-color: #f44336;
-    color: white;
+    color: #373434;
   }
   </style>
   
