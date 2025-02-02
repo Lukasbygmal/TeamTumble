@@ -117,7 +117,9 @@ const removeBall = (index: number) => {
 .ball-item input {
   flex-grow: 1;
   margin-right: 5px;
+  border-radius: 4px;
   padding: 2px;
+  font-family: 'Lilita One';
   background-color: #d3d3d3;
 }
 
@@ -125,6 +127,6 @@ const removeBall = (index: number) => {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  margin: 2px;
+  margin-right: 4px;
 }
 </style>

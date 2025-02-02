@@ -176,6 +176,20 @@ const setupPlinko = () => {
           }
         )
       );
+      slotDividers.push(
+        Bodies.circle(
+          10 + i * slotWidth,
+          700 - 20,
+          5,
+          {
+            isStatic: true,
+            label: 'divider',
+            friction: 0.0,
+            frictionStatic: 0.0,
+            render: { fillStyle: '#373434' }
+          }
+        )
+      );
     }
 
 
@@ -355,31 +369,36 @@ onBeforeUnmount(() => {
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
+  background: #d3d3d3;
+  padding: 10px;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Lilita One', cursive;
   font-size: 18px;
-  padding: 20px;
+}
+
+.modal-content h2 {
+  margin-bottom: 0px;
 }
 
 .team-results {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
-  margin: 20px 0;
+  max-width: 800px;
+  margin-bottom: 10px;
 }
+
 
 .team {
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
+
 .team h3 {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .team ul {
@@ -392,18 +411,4 @@ onBeforeUnmount(() => {
   margin-bottom: 5px;
 }
 
-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
 </style>
