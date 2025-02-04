@@ -28,6 +28,9 @@ const handleClick = () => {
   padding: 3px 8px;
 }
 
+.standard-button:hover {
+  filter: brightness(0.85);
+}
 
 .primary {
   background-color: #4caf50;

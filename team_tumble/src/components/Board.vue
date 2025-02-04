@@ -14,7 +14,8 @@
             </ul>
           </div>
         </div>
-        <StandardButton label="Close" fontSize="24px" color="primary" @click="closeResults" />
+        <StandardButton label="Copy" fontSize="24px" color="secondary" @click="copyResults" />
+        <StandardButton label="Close" fontSize="24px" color="danger" @click="closeResults" />
       </div>
     </div>
   </div>
@@ -38,6 +39,24 @@ let render: Matter.Render;
 let runner: Matter.Runner;
 
 const colors = ['#ffaaaa', '#aaffaa', '#aaaaff', '#ffffaa', '#ffaaff', '#aaffff', '#ffaa00', '#aa00ff'];
+
+const copyResults = () => {
+  let resultText = "";
+  capturedBalls.value.forEach((balls, teamId) => {
+    if (teamId < props.teams) {
+      resultText += `Team ${teamId + 1}:\n`;
+      balls.forEach(ball => {
+        resultText += `${ball.name}\n`;
+      });
+      resultText += "\n";
+    }
+  });
+
+  navigator.clipboard.writeText(resultText)
+    .catch(err => {
+      console.error("Failed to copy results:", err);
+    });
+};
 
 const emit = defineEmits<{
   (event: 'game-ended'): void;
@@ -154,7 +173,7 @@ const setupPlinko = () => {
           {
             isStatic: true,
             label: 'ground',
-            render: { fillStyle: '#000' } //this should invisible
+            render: { fillStyle: '#d3d3d3' }
           }
         )
       );
@@ -410,5 +429,4 @@ onBeforeUnmount(() => {
 .team li {
   margin-bottom: 5px;
 }
-
 </style>
