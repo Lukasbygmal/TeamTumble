@@ -26,6 +26,7 @@ const handleClick = () => {
   border: none;
   border-radius: 5px;
   padding: 3px 8px;
+  margin:  0px 2px;
 }
 
 .standard-button:hover {

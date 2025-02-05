@@ -23,6 +23,9 @@ export default {
   margin: 0;
   padding: 0;
   background-color: #373434;
+  min-width: 1350px;
+  min-height: 830px;
+  height: 100vh;
 }
 
 h1 {
