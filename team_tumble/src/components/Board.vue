@@ -26,17 +26,23 @@ import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
 import Matter, { Engine, Render, World, Bodies, Runner, Events, IEventCollision, IEventCollisionPair } from 'matter-js';
 import StandardButton from '@/components/StandardButton.vue';
 
+interface Ball {
+  id: number;
+  name: string;
+  color: string;
+}
+
 interface CapturedBall {
   name: string;
   color: string;
   ball: Matter.Body;
 }
 
-const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string; color: string }[] }>();
-const ballQueue = ref([...props.balls]);
+const props = defineProps<{ rows: number; teams: number; balls: Ball[] }>();
+const ballQueue = ref<Ball[]>([...props.balls]);
 const activeBalls = ref(0);
 const teamCounts = ref(new Map<number, number>());
-const capturedBalls = ref<CapturedBall[][]>(Array.from({ length: props.teams }, () => []));
+const capturedBalls = ref<CapturedBall[][]>(Array.from({ length: 8 }, () => []));
 const maxPerTeam = ref<number[]>(Array.from({ length: 8 }, () => 0));
 const resultsShown = ref(false);
 const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
@@ -67,7 +73,6 @@ const copyResults = () => {
 const emit = defineEmits<{
   (event: 'game-ended'): void;
 }>();
-
 
 const setupPlinko = () => {
   const canvas = plinkoCanvas.value;
@@ -215,8 +220,6 @@ const setupPlinko = () => {
         )
       );
     }
-
-
   }
 
   World.add(engine.world, [ground, leftWall, rightWall, ...pegs, ...slots, ...slotDividers]);
@@ -244,7 +247,7 @@ const setupPlinko = () => {
   Render.run(render);
 };
 
-const startGame = async (balls: { id: number; name: string }[]) => {
+const startGame = async (balls: Ball[]) => {
   if (!engine) return;
 
   resultsShown.value = false;
@@ -419,11 +422,9 @@ onBeforeUnmount(() => {
   margin-bottom: 10px;
 }
 
-
 .team {
   padding: 10px;
 }
-
 
 .team h3 {
   margin-bottom: 5px;
