@@ -1,13 +1,15 @@
 <template>
     <div class="slider-container">
         <label :for="id" class="slider-label">{{ label }}: {{ modelValue }}</label>
-        <input :id="id" type="range" :min="min" :max="max" :disabled="disabled" :value="modelValue"
-            @input="$emit('update:modelValue', +$event.target.value)" class="slider" />
+        <input :id="id" type="range" :min="min" :max="max" :disabled="disabled" :value="modelValue" @input="handleInput"
+            class="slider" />
     </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { defineProps, defineEmits } from 'vue';
+
+const props = defineProps<{
     id: string;
     label: string;
     min: number;
@@ -16,7 +18,14 @@ defineProps<{
     modelValue: number;
 }>();
 
-defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: number): void
+}>();
+
+const handleInput = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    emit('update:modelValue', +target.value);
+};
 </script>
 
 <style scoped>
@@ -35,7 +44,6 @@ defineEmits(['update:modelValue']);
 }
 
 .slider {
-    -webkit-appearance: none;
     width: 100%;
     height: 12px;
     border-radius: 5px;
