@@ -23,15 +23,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
-import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
+import Matter, { Engine, Render, World, Bodies, Runner, Events, IEventCollision, IEventCollisionPair } from 'matter-js';
 import StandardButton from '@/components/StandardButton.vue';
+
+interface CapturedBall {
+  name: string;
+  color: string;
+  ball: Matter.Body;
+}
 
 const props = defineProps<{ rows: number; teams: number; balls: { id: number; name: string; color: string }[] }>();
 const ballQueue = ref([...props.balls]);
 const activeBalls = ref(0);
 const teamCounts = ref(new Map<number, number>());
-const capturedBalls = ref(Array.from({ length: 8 }, () => []));
-const maxPerTeam = ref(0);
+const capturedBalls = ref<CapturedBall[][]>(Array.from({ length: props.teams }, () => []));
+const maxPerTeam = ref<number[]>(Array.from({ length: 8 }, () => 0));
 const resultsShown = ref(false);
 const plinkoCanvas = ref<HTMLCanvasElement | null>(null);
 let engine: Matter.Engine;
@@ -177,7 +183,6 @@ const setupPlinko = () => {
           }
         )
       );
-      slot_index = slot_index + 1;
     }
     if (i != 0 && i != num_slots_side + 1) {
       slotDividers.push(
@@ -216,8 +221,8 @@ const setupPlinko = () => {
 
   World.add(engine.world, [ground, leftWall, rightWall, ...pegs, ...slots, ...slotDividers]);
 
-  Events.on(engine, 'collisionStart', (event) => {
-    event.pairs.forEach((pair) => {
+  Events.on(engine, "collisionStart", (event: IEventCollision<Engine>) => {
+    event.pairs.forEach((pair: IEventCollisionPair) => {
       const { bodyA, bodyB } = pair;
 
       if (bodyA.label.startsWith('slot-') && bodyB.label === 'ball') {
@@ -250,8 +255,12 @@ const startGame = async (balls: { id: number; name: string }[]) => {
   capturedBalls.value.forEach((team) => team.length = 0);
   teamCounts.value = new Map<number, number>();
 
-  //When balls > teams and teams > 2 and not evenly divided, it will cause "issues", but sorta how it will have to work 
-  maxPerTeam.value = Math.ceil(balls.length / props.teams);
+  const extraBalls = balls.length % props.teams
+  const minBalls = Math.floor(balls.length / props.teams);
+
+  maxPerTeam.value = maxPerTeam.value.map((_, index) =>
+    index < extraBalls ? minBalls + 1 : minBalls
+  );
 
   for (const ball of balls) {
     spawnBall();
@@ -301,7 +310,7 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
   const teamCount = teamCounts.value.get(teamId) ?? 0;
   const ballData = props.balls.find((b) => b.id === ball.id);
 
-  if (teamCount < maxPerTeam.value) {
+  if (teamCount < maxPerTeam.value[teamId]) {
     teamCounts.value.set(teamId, teamCount + 1);
 
     capturedBalls.value[teamId].push({
