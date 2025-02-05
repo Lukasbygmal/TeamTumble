@@ -23,10 +23,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, defineExpose } from 'vue';
-import Matter, { Engine, Render, World, Bodies, Runner, Events, IEventCollision, IEventCollisionPair } from 'matter-js';
+import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
 import StandardButton from '@/components/StandardButton.vue';
 
-interface Ball {
+type IEventCollision = {
+  pairs: Array<{
+    bodyA: Matter.Body;
+    bodyB: Matter.Body;
+  }>;
+};
+
+export interface Ball {
   id: number;
   name: string;
   color: string;
@@ -224,10 +231,9 @@ const setupPlinko = () => {
 
   World.add(engine.world, [ground, leftWall, rightWall, ...pegs, ...slots, ...slotDividers]);
 
-  Events.on(engine, "collisionStart", (event: IEventCollision<Engine>) => {
-    event.pairs.forEach((pair: IEventCollisionPair) => {
+  Events.on(engine, "collisionStart", (event: IEventCollision) => {
+    event.pairs.forEach((pair) => {
       const { bodyA, bodyB } = pair;
-
       if (bodyA.label.startsWith('slot-') && bodyB.label === 'ball') {
         captureBall(bodyB, bodyA.label);
       }
@@ -318,7 +324,7 @@ const captureBall = (ball: Matter.Body, slotLabel: string) => {
 
     capturedBalls.value[teamId].push({
       name: ballData?.name || `${ball.id}`,
-      color: ballData?.color || ball.render.fillStyle,
+      color: ballData?.color || ball.render.fillStyle|| '#d3d3d3',
       ball,
     });
   }
